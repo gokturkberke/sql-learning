@@ -28,9 +28,9 @@ WHERE facid IN (1,5);
 SELECT memid,surname,firstname,joindate FROM cd.members
 WHERE joindate >= '2012-09-01';
 
---8) How can you produce an orrdered list of the first 10 surnames in the members table do not contain duplicates
+--8) How can you produce an ordered list of the first 10 surnames in the members table do not contain duplicates
 SELECT DISTINCT(surname) FROM cd.members
-ORDER BY surname ASC 
+ORDER BY surname ASC --default zaten asc yazmaya gerek yok yazadabiliirz
 LIMIT 10;
 
 --9)signup date of your last member
@@ -65,7 +65,7 @@ AND cd.bookings.starttime >= '2012-09-21'
 AND cd.bookings.starttime < '2012-09-22'
 ORDER BY cd.bookings.starttime;
 
---14) How can you produce a list of the start times for bookings by members named 'David Farrll'
+--14) How can you produce a list of the start times for bookings by members named 'David Farrell'
 SELECT cd.bookings.starttime
 FROM cd.bookings
 INNER JOIN cd.members ON 
