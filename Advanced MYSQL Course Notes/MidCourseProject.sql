@@ -75,7 +75,7 @@ FROM website_sessions
 	WHERE website_sessions.created_at < '2012-11-27'
     GROUP BY 1;
     
--- question 5
+-- question 5 (session to order conversion rates by month)
 SELECT
 	DATE_FORMAT(website_sessions.created_at, '%Y-%m') AS year_month_date,
     COUNT(DISTINCT website_sessions.website_session_id) AS total_sessions,
