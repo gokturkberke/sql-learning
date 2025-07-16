@@ -99,7 +99,45 @@ SELECT
 FROM website_sessions
 WHERE
 created_at < '2012-12-23'
-GROUP BY 1,2
+GROUP BY 1,2;
+-- ----------------------------------------------------------------------------------------------------------------
+SELECT 
+    website_session_id,
+    created_at,
+    HOUR(created_at) AS hr,
+    WEEKDAY(created_at) AS wkday,
+    CASE
+        WHEN WEEKDAY(created_at) = 0 THEN 'Monday'
+        ELSE 'other_day'
+    END AS clean_weekday,
+    QUARTER(created_at) AS qtr,
+    MONTH(created_at) AS mo,
+    DATE(created_at) AS date,
+    WEEK(created_at) AS wk
+FROM
+    website_sessions
+WHERE
+    website_session_id BETWEEN 150000 AND 155000;
 
+-- take a look at 2012's monthly and weekly volume patterns to see if we can find any seasonal trends we should plan for in 2013
+SELECT
+	COUNT(DISTINCT website_sessions.website_session_id) AS sessions,
+    COUNT(DISTINCT orders.order_id) AS orders,
+    YEAR(website_sessions.created_at),
+    MONTH(website_sessions.created_at)
+FROM website_sessions
+LEFT JOIN orders
+ON website_sessions.website_session_id = orders.website_session_id
+WHERE website_sessions.created_at BETWEEN '2012-01-02' AND '2013-01-01'
+GROUP BY 3,4;
 
-
+SELECT
+	COUNT(DISTINCT website_sessions.website_session_id) AS sessions,
+    COUNT(DISTINCT orders.order_id) AS orders,
+	MIN(DATE (website_sessions.created_at)) AS week_start_date
+FROM website_sessions
+LEFT JOIN orders
+ON website_sessions.website_session_id = orders.website_session_id
+WHERE website_sessions.created_at BETWEEN '2012-01-02' AND '2013-01-01'
+GROUP BY YEAR(website_sessions.created_at),
+		WEEK(website_sessions.created_at)
