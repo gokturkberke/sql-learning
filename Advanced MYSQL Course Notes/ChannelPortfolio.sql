@@ -140,4 +140,28 @@ LEFT JOIN orders
 ON website_sessions.website_session_id = orders.website_session_id
 WHERE website_sessions.created_at BETWEEN '2012-01-02' AND '2013-01-01'
 GROUP BY YEAR(website_sessions.created_at),
-		WEEK(website_sessions.created_at)
+		WEEK(website_sessions.created_at);
+        
+-- Could you analyze the average website session volume by hour of day and by day week(date range sep 15- nov15)
+SELECT 
+	hr,
+	-- ROUND(AVG(website_sessions),1) AS avg_sessions,
+    ROUND(AVG(CASE WHEN wkday = 0 THEN website_sessions ELSE NULL END),1) as monday,
+    ROUND(AVG(CASE WHEN wkday = 1 THEN website_sessions ELSE NULL END),1) as tuesday,
+    ROUND(AVG(CASE WHEN wkday = 2 THEN website_sessions ELSE NULL END),1) as wednesday,
+    ROUND(AVG(CASE WHEN wkday = 3 THEN website_sessions ELSE NULL END),1) as thursday,
+    ROUND(AVG(CASE WHEN wkday = 4 THEN website_sessions ELSE NULL END),1) as friday,
+    ROUND(AVG(CASE WHEN wkday = 5 THEN website_sessions ELSE NULL END),1) as saturday,
+    ROUND(AVG(CASE WHEN wkday = 6 THEN website_sessions ELSE NULL END),1) as sunday
+FROM(
+SELECT
+	DATE(created_at) AS created_date,
+    WEEKDAY(created_at) AS wkday,
+    HOUR(created_at) AS hr,
+    COUNT(DISTINCT website_session_id) AS website_sessions
+FROM website_sessions
+WHERE created_at BETWEEN '2012-09-15' AND '2012-11-15'
+GROUP BY 1,2,3
+) AS dairly_hourly_sessions
+GROUP BY 1
+ORDER BY 1
