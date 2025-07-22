@@ -153,3 +153,29 @@ FROM sessions_seeing_product_pages
 GROUP BY
 	website_session_id,
     CASE
+		WHEN product_page_seen = '/the-original-mr-fuzzy' THEN 'mrfuzzy'
+        WHEN product_page_seen = '/the-forever-love-bear' THEN 'lovebear'
+        ELSE 'check the logic'
+	END;
+	
+    
+-- final output part 1
+SELECT
+	product_seen,
+    COUNT(DISTINCT website_session_id) AS sessions,
+    COUNT(DISTINCT CASE WHEN cart_made_it =1 THEN website_session_id ELSE NULL END) AS to_cart,
+    COUNT(DISTINCT CASE WHEN shipping_made_it =1 THEN website_session_id ELSE NULL END) AS to_shipping,
+    COUNT(DISTINCT CASE WHEN billing_made_it =1 THEN website_session_id ELSE NULL END) AS to_billing,
+    COUNT(DISTINCT CASE WHEN thankyou_made_it =1 THEN website_session_id ELSE NULL END) AS to_thankyou
+FROM session_product_level_made_it_flags
+GROUP BY product_seen;
+
+-- part 2
+SELECT
+	product_seen,
+    COUNT(DISTINCT CASE WHEN cart_made_it =1 THEN website_session_id ELSE NULL END)/ COUNT(DISTINCT website_session_id) AS product_page_click_rt,
+    COUNT(DISTINCT CASE WHEN shipping_made_it =1 THEN website_session_id ELSE NULL END) / COUNT(DISTINCT CASE WHEN cart_made_it =1 THEN website_session_id ELSE NULL END) AS cart_click_rt,
+    COUNT(DISTINCT CASE WHEN billing_made_it =1 THEN website_session_id ELSE NULL END) / COUNT(DISTINCT CASE WHEN shipping_made_it =1 THEN website_session_id ELSE NULL END) AS shipping_click_rt,
+    COUNT(DISTINCT CASE WHEN thankyou_made_it =1 THEN website_session_id ELSE NULL END) / COUNT(DISTINCT CASE WHEN billing_made_it =1 THEN website_session_id ELSE NULL END) AS billing_click_rt
+FROM session_product_level_made_it_flags
+GROUP BY product_seen;
